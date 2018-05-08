@@ -17,7 +17,7 @@ catkin_make
 roscore
 
 - 7-2 new terminal2
-cd ros
+ - cd ros
 source devel/setup.sh
 roslaunch launch/styx.launch
 
