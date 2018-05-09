@@ -14,12 +14,7 @@ pip install -r requirements.txt
 cd ros  
 source devel/setup.sh  
 catkin_make  
-roscore  
-
-- 7-2 new terminal2  
-cd ros  
-source devel/setup.sh  
 roslaunch launch/styx.launch  
 
-- 7-3 new terminal3(Udacity Simulator)  
+- 7-2 new terminal2(Udacity Simulator)  
 ./sys_int.x86_64 
