@@ -89,6 +89,8 @@ class TLDetector(object):
             self.upcoming_red_light_pub.publish(Int32(self.last_wp))
         self.state_count += 1
 
+        #rospy.logwarn("State: " + str(self.state) )
+
     def get_closest_waypoint(self, pose):
         """Identifies the closest path waypoint to the given position
             https://en.wikipedia.org/wiki/Closest_pair_of_points_problem
@@ -120,6 +122,8 @@ class TLDetector(object):
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
+        return light.state
+
         if(not self.has_image):
             self.prev_light_loc = None
             return False
@@ -141,6 +145,10 @@ class TLDetector(object):
         line_wp_idx = None
         # List of positions that correspond to the line to stop in front of for a given intersection
         stop_line_positions = self.config['stop_line_positions']
+
+        #rospy.logwarn("Car x: " + str(self.pose.pose.position.x) )  
+        #rospy.logwarn("Car y: " + str(self.pose.pose.position.y) )  
+
         if(self.pose):
             car_wp_idx = self.get_closest_waypoint(self.pose.pose)
             #TODO find the closest visible traffic light (if one exists)
@@ -153,6 +161,7 @@ class TLDetector(object):
                 temp_wp_idx = self.get_closest_waypoint(stoplight_pose)
 
                 d = temp_wp_idx - car_wp_idx
+             
                 if d >= 0 and d < diff:
                     diff = d
                     closest_light = light
@@ -160,6 +169,11 @@ class TLDetector(object):
 
         if closest_light:
             state = self.get_light_state(closest_light)
+
+
+            #rospy.logwarn("Car index: " + str(car_wp_idx) )             
+            #rospy.logwarn("Light index: " + str(line_wp_idx) )
+
             return line_wp_idx, state
         #self.waypoints = None
         return -1, TrafficLight.UNKNOWN
