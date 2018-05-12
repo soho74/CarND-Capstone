@@ -11,6 +11,7 @@ import tf
 import cv2
 import yaml
 import math
+import numpy as np
 
 STATE_COUNT_THRESHOLD = 3
 
@@ -130,8 +131,15 @@ class TLDetector(object):
 
         cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
 
+        x0, y0, x1, y1 = self.project_to_image_plane(light.pose.pose.position)
+        
+        if x0 == x1 or x0 < 0 or x1 > cv_image.shape[1] or \
+            y0 == y1 or y0 < 0 or y1 > cv_image.shape[0]:
+            return TrafficLight.UNKNOWN
+        light_image = cv_image[y0:y1, x0:x1, :]        
+
         #Get classification
-        return self.light_classifier.get_classification(cv_image)
+        return self.light_classifier.get_classification(light_image)
 
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
@@ -177,6 +185,52 @@ class TLDetector(object):
             return line_wp_idx, state
         #self.waypoints = None
         return -1, TrafficLight.UNKNOWN
+
+    def project_to_image_plane(self, point_in_world):
+        """Project point from 3D world coordinates to 2D camera image location
+        Args:
+            point_in_world (Point): 3D location of a point in the world
+        Returns:
+            x (int): x coordinate of target point in image
+            y (int): y coordinate of target point in image
+        """
+        # reference: https://discussions.udacity.com/t/focal-length-wrong/358568/23
+        fx = 2574
+        fy = 2744
+        image_width = self.config['camera_info']['image_width']
+        image_height = self.config['camera_info']['image_height']
+                                        
+        x_offset = (image_width / 2) - 30
+        y_offset = image_height + 50 
+        corner_offset = 1.5
+
+        try:
+            now = rospy.Time.now()
+            self.listener.waitForTransform(
+                "/base_link", "/world", self.pose.header.stamp, rospy.Duration(1.0))
+            transT, rotT = self.listener.lookupTransform(
+                "/base_link", "/world", self.pose.header.stamp)
+        except (tf.Exception, tf.LookupException, tf.ConnectivityException):
+            rospy.logerr("Failed to find camera to map transform")
+            return 0, 0, 0, 0
+
+        RT = np.mat(self.listener.fromTranslationRotation(transT, rotT))
+        point_3d = np.mat([[point_in_world.x], 
+                           [point_in_world.y],
+                           [point_in_world.z], 
+                           [1.0]])
+        point_3d_vehicle = (RT * point_3d)[:-1, :]
+        camera_height_offset = 1.1
+        camera_x = -point_3d_vehicle[1]
+        camera_y = -(point_3d_vehicle[2] - camera_height_offset)
+        camera_z = point_3d_vehicle[0]
+
+        x0 = int((camera_x - corner_offset) * fx / camera_z) + x_offset
+        y0 = int((camera_y - corner_offset) * fy / camera_z) + y_offset
+        x1 = int((camera_x + corner_offset) * fx / camera_z) + x_offset
+        y1 = int((camera_y + corner_offset) * fy / camera_z) + y_offset
+        return x0, y0, x1, y1
+
 
 if __name__ == '__main__':
     try:
