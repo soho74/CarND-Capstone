@@ -132,7 +132,7 @@ class TLDetector(object):
         x0, y0, x1, y1 = self.project_to_image_plane(light.pose.pose.position)
         
         if x0 == x1 or x0 < 0 or x1 > cv_image.shape[1] or \
-            y0 == y1 or y0 < 0 or y1 > cv_image.shape[1]:
+            y0 == y1 or y0 < 0 or y1 > cv_image.shape[0]:
             return TrafficLight.UNKNOWN
         light_image = cv_image[y0:y1, x0:x1, :]        
 
