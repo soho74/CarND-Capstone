@@ -194,12 +194,6 @@ class TLClassifier:
             print
         return avg_celoss, eval_acc
 
-    def export_graph(self, session, model_dir):
-        latest_ckpt = tf.train.latest_checkpoint(model_dir)
-        self.saver.restore(latest_ckpt)
-        variables = tf.all_variables()
-        tf.train.write_graph(sess.graph_def, 'graph', 'model.ph', False)
-
 
 if __name__ == "__main__":
     cfg = Config()
