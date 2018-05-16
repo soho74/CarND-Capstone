@@ -156,7 +156,49 @@ class TLDetector(object):
 
         #rospy.logwarn("Car x: " + str(self.pose.pose.position.x) )  
         #rospy.logwarn("Car y: " + str(self.pose.pose.position.y) )  
+        if(self.pose):
+            car_wp_idx = self.get_closest_waypoint(self.pose.pose)        
+            cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
+            hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV_FULL)
+            h = hsv[:, :, 0]
+            s = hsv[:, :, 1]     
+            v = hsv[:, :, 2]             
+            mask = np.zeros(h.shape, dtype=np.uint8)
+            mask[((h < 10) | (h > 220)) & (s > 180) & (v > 180)] = 255
+            kernel = np.ones((7,7),np.uint8)
+            mask = cv2.erode(mask,kernel,iterations = 1)     
+            mask = cv2.dilate(mask,kernel,iterations = 1)             
+    
+            contours = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[1]
+            contours.sort(key=cv2.contourArea, reverse=True)
+            rospy.logwarn(len(contours))            
 
+            diff2 = None
+
+            if len(contours) > 0 and cv2.contourArea(contours[0]) < 600:
+                diff2 = int((22.6 - math.sqrt(cv2.contourArea(contours[0]))) * 3 )
+                #diff2 = (510 - cv2.contourArea(contours[0])) / 4.5
+
+                if diff2 < 0:
+                    diff2 = 0
+
+                '''
+                closest_light = self.lights[0]
+                closest_light.pose.pose.position.x = self.pose.pose.position.x 
+                closest_light.pose.pose.position.y = self.pose.pose.position.y
+                closest_light.pose.pose.position.x = self.waypoints.waypoints[car_wp_idx + diff2].pose.pose.position.x
+                closest_light.pose.pose.position.y = self.waypoints.waypoints[car_wp_idx + diff2].pose.pose.position.y
+                state = self.get_light_state(closest_light)
+                return car_wp_idx + diff2, state
+                '''
+                #rospy.logwarn("Area=" + str(cv2.contourArea(contours[0])) + " state=" + str(state))
+                
+                return car_wp_idx + diff2, TrafficLight.RED                
+            else:
+                return -1, TrafficLight.UNKNOWN
+
+
+        return -1, TrafficLight.UNKNOWN
         if(self.pose):
             car_wp_idx = self.get_closest_waypoint(self.pose.pose)
             #TODO find the closest visible traffic light (if one exists)
