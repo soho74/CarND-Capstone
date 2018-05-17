@@ -250,8 +250,8 @@ class TLDetector(object):
             y (int): y coordinate of target point in image
         """
         # reference: https://discussions.udacity.com/t/focal-length-wrong/358568/23
-        fx = 2574
-        fy = 2744
+        fx = self.config['camera_info']['focal_length_x']
+        fy = self.config['camera_info']['focal_length_y']
         image_width = self.config['camera_info']['image_width']
         image_height = self.config['camera_info']['image_height']
                                         
