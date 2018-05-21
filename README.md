@@ -1,4 +1,4 @@
-ヘッダー2			{#header2}
+Udacity Self-Driving Car Engineer Nanodegree		{#header2}
 ------------
 
 ### Team name: Driving app
