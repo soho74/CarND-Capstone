@@ -7,7 +7,7 @@
 | --------------- |:---------------:|
 | Noriaki Hori     | nori.h.nori@gmail.com|
 | Alexey Sas |asasryl@gmail.com|
-| Andy Jang|aj4834247@gmail.com|
+| Andy | (It is confirming now.)|
 | Shuyao Xu|seanxu1015@gmail.com|
 
 ### 
