@@ -5,12 +5,17 @@
 
 | Name       | email          |
 | --------------- |:---------------:|
-| Noriaki Hori     | nori.h.nori@gmail.com|
+| Noriaki Hori nori.h.nori@gmail.com|
 | Alexey Sas |asasryl@gmail.com|
 | Andy | (It is confirming now.)|
 | Shuyao Xu|seanxu1015@gmail.com|
 
 ### 
+
+# Classifier Progress
+-![screenshot](./imgs/1.png) (5/13/2018)
+ ![screenshot](./imgs/2.png) (5/21/2018)
+Running Instructions
 
 
 # Install memo
