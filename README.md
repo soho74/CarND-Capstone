@@ -14,9 +14,8 @@
 
 # Classifier Progress
 - 5/13/2018
--![screenshot](./imgs/1.png) 
+![screenshot](./imgs/1.png) 
 
--
 - 5/21/2018
  ![screenshot](./imgs/2.png) 
  
