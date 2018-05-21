@@ -13,7 +13,7 @@
 ### 
 
 
-# install memo
+# Install memo
 
 - 1.Ubuntu 16.04 
 - 2.ROS Kinetic if you have Ubuntu 16.04.
