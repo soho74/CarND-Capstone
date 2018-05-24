@@ -4,8 +4,10 @@ import tensorflow as tf
 from styx_msgs.msg import TrafficLight
 import rospy
 
+traffic_pattern = -1
+
 class TLClassifier(object):
-    def __init__1(self):
+    def __init__(self):
         print(tf.__version__)
 
         self.detection_graph = tf.Graph()
@@ -26,9 +28,10 @@ class TLClassifier(object):
         self.sess = tf.Session(graph=graph)                          
 
             
-    def get_classification1(self, image):
+    def get_classification(self, image):
+        global traffic_pattern
 
-        image = cv2.resize(image[:,:,::-1],(200, 200), cv2.INTER_CUBIC)
+        image = cv2.resize(image[:,:,::-1],(400, 400), cv2.INTER_CUBIC)
         final_image = np.expand_dims(image, 0)
 
         output_dict = self.sess.run(self.tensor_dict, feed_dict={self.image_tensor: final_image})
@@ -38,20 +41,31 @@ class TLClassifier(object):
 
         score = output_dict['detection_scores'][0]
 
+
         if score > 0.4:
             num = output_dict['detection_classes'][0] -1
         else:
             num = 6
 
+        if score > 0.8 and traffic_pattern == -1:
+            if num < 3:
+                traffic_pattern = 1
+            else:
+                traffic_pattern = 2
+
+            
         print("                                                                                  ", num, score)
 
         if num == 6:
             return 4
         else:
-            return num % 3
+            if (traffic_pattern == 1 and num < 3) or (traffic_pattern == 2 and num > 2) :
+                return num % 3
+            else:
+                return 4
         return num
 
-    def __init__(self):
+    def __init__1(self):
         #TODO load classifier        
         with tf.gfile.GFile('light_classification/tlc_model/tlc_model.pb', "rb") as f:
             graph_def = tf.GraphDef()
@@ -70,7 +84,7 @@ class TLClassifier(object):
             self.sess = tf.Session(graph=graph)
             self.counter = 0
             
-    def get_classification(self, image):
+    def get_classification1(self, image):
         """Determines the color of the traffic light in the image
         Args:
             image (cv::Mat): image containing the traffic light
