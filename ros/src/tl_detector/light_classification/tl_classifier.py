@@ -5,7 +5,7 @@ from styx_msgs.msg import TrafficLight
 import rospy
 
 class TLClassifier(object):
-    def __init__(self):
+    def __init__1(self):
         print(tf.__version__)
 
         self.detection_graph = tf.Graph()
@@ -26,7 +26,7 @@ class TLClassifier(object):
         self.sess = tf.Session(graph=graph)                          
 
             
-    def get_classification(self, image):
+    def get_classification1(self, image):
 
         image = cv2.resize(image[:,:,::-1],(200, 200), cv2.INTER_CUBIC)
         final_image = np.expand_dims(image, 0)
@@ -51,7 +51,7 @@ class TLClassifier(object):
             return num % 3
         return num
 
-    def __init__2(self):
+    def __init__(self):
         #TODO load classifier        
         with tf.gfile.GFile('light_classification/tlc_model/tlc_model.pb', "rb") as f:
             graph_def = tf.GraphDef()
@@ -70,7 +70,7 @@ class TLClassifier(object):
             self.sess = tf.Session(graph=graph)
             self.counter = 0
             
-    def get_classification2(self, image):
+    def get_classification(self, image):
         """Determines the color of the traffic light in the image
         Args:
             image (cv::Mat): image containing the traffic light
