@@ -13,9 +13,9 @@
 ### 
 
 # Classifier Progress
-##### 5/13/2018
+- ![screenshot](./imgs/0.png) 
 - ![screenshot](./imgs/1.png) 
- 
+- ![screenshot](./imgs/1-1.png) 
 Running Instructions
 
 
