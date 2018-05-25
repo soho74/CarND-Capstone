@@ -13,9 +13,9 @@
 ### 
 
 # Classifier Progress
-- ![screenshot](./imgs/0.png) 
+- ![screenshot](./imgs/0.jpg) 
+- ![screenshot](./imgs/1.jpg) 
 - ![screenshot](./imgs/1.png) 
-- ![screenshot](./imgs/1-1.png) 
 Running Instructions
 
 
