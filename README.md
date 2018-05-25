@@ -13,6 +13,7 @@
 ### 
 
 # Classifier Progress
+- [![IMAGE ALT TEXT HERE](http://i.ytimg.com/vi/Gz6hL1oYbfY/0.jpg)](https://youtu.be/Gz6hL1oYbfY)
 - ![screenshot](./imgs/0.jpg) 
 - ![screenshot](./imgs/1.jpg) 
 - ![screenshot](./imgs/1.png) 
