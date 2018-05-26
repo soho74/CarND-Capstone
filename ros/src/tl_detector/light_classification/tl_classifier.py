@@ -54,7 +54,7 @@ class TLClassifier(object):
                 traffic_pattern = 2
 
             
-        print("                                                                                  ", num, score)
+        print("                                                                          ", num, score)
 
         if num == 6:
             return 4
