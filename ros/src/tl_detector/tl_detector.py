@@ -11,8 +11,15 @@ import tf
 import cv2
 import yaml
 import math
+import numpy as np
+import random
+#from publish import DBWNode
+#from twist_controller.dbw_node import DBWNode
+#from twist_controller import Controller
+
 
 STATE_COUNT_THRESHOLD = 3
+cnt = [0, 0, 0]
 
 class TLDetector(object):
     def __init__(self):
@@ -49,6 +56,9 @@ class TLDetector(object):
         self.last_state = TrafficLight.UNKNOWN
         self.last_wp = -1
         self.state_count = 0
+
+        self.position_x = 0
+        self.cnt = 0
 
         rospy.spin()
 
@@ -122,15 +132,15 @@ class TLDetector(object):
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-        return light.state
+        #return light.state
 
         if(not self.has_image):
             self.prev_light_loc = None
             return False
 
+
         cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
 
-        #Get classification
         return self.light_classifier.get_classification(cv_image)
 
     def process_traffic_lights(self):
@@ -162,14 +172,20 @@ class TLDetector(object):
 
                 d = temp_wp_idx - car_wp_idx
              
-                if d >= 0 and d < diff:
+                if d >= -1 and d < diff:
                     diff = d
                     closest_light = light
                     line_wp_idx = temp_wp_idx
 
+                    '''
+                    if d > 0:
+                        line_wp_idx = temp_wp_idx
+                    else:
+                        line_wp_idx = temp_wp_idx - d
+                    '''
+
         if closest_light:
             state = self.get_light_state(closest_light)
-
 
             #rospy.logwarn("Car index: " + str(car_wp_idx) )             
             #rospy.logwarn("Light index: " + str(line_wp_idx) )
@@ -177,6 +193,52 @@ class TLDetector(object):
             return line_wp_idx, state
         #self.waypoints = None
         return -1, TrafficLight.UNKNOWN
+        
+
+    def project_to_image_plane(self, point_in_world):
+        """Project point from 3D world coordinates to 2D camera image location
+        Args:
+            point_in_world (Point): 3D location of a point in the world
+        Returns:
+            x (int): x coordinate of target point in image
+            y (int): y coordinate of target point in image
+        """
+        # reference: https://discussions.udacity.com/t/focal-length-wrong/358568/23
+        fx = self.config['camera_info']['focal_length_x']
+        fy = self.config['camera_info']['focal_length_y']
+        image_width = self.config['camera_info']['image_width']
+        image_height = self.config['camera_info']['image_height']
+                                        
+        x_offset = (image_width / 2) - 30
+        y_offset = image_height + 50 
+        corner_offset = 1.5
+
+        try:
+            now = rospy.Time.now()
+            self.listener.waitForTransform(
+                "/base_link", "/world", self.pose.header.stamp, rospy.Duration(1.0))
+            transT, rotT = self.listener.lookupTransform(
+                "/base_link", "/world", self.pose.header.stamp)
+        except (tf.Exception, tf.LookupException, tf.ConnectivityException):
+            rospy.logerr("Failed to find camera to map transform")
+            return 0, 0, 0, 0
+
+        RT = np.mat(self.listener.fromTranslationRotation(transT, rotT))
+        point_3d = np.mat([[point_in_world.x], 
+                           [point_in_world.y],
+                           [point_in_world.z], 
+                           [1.0]])
+        point_3d_vehicle = (RT * point_3d)[:-1, :]
+        camera_height_offset = 1.1
+        camera_x = -point_3d_vehicle[1]
+        camera_y = -(point_3d_vehicle[2] - camera_height_offset)
+        camera_z = point_3d_vehicle[0]
+
+        x0 = int((camera_x - corner_offset) * fx / camera_z) + x_offset
+        y0 = int((camera_y - corner_offset) * fy / camera_z) + y_offset
+        x1 = int((camera_x + corner_offset) * fx / camera_z) + x_offset
+        y1 = int((camera_y + corner_offset) * fy / camera_z) + y_offset
+        return x0, y0, x1, y1
 
 if __name__ == '__main__':
     try:

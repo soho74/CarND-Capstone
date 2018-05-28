@@ -23,7 +23,7 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 50 # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 100 # Number of waypoints we will publish. You can change this number
 MAX_DECEL = .5 #
 
 
@@ -84,7 +84,16 @@ class WaypointUpdater(object):
         lane = Lane()
 
         farthest_idx = closest_idx + LOOKAHEAD_WPS
-        base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
+
+        diff = len(self.waypoints_2d)
+
+        if farthest_idx < diff:           
+            base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
+            #rospy.logwarn("IF " + str(closest_idx) +" " + str(farthest_idx))  
+
+        else:
+            base_waypoints = self.base_lane.waypoints[closest_idx:int(diff)] + self.base_lane.waypoints[0:int(farthest_idx % diff)]
+            #rospy.logwarn("ELSE if " + str(closest_idx) +" " + str(diff) +",0 " + str(int(farthest_idx % diff)))  
 
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
@@ -102,7 +111,13 @@ class WaypointUpdater(object):
 
             stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0)
             dist = self.distance(waypoints, i, stop_idx)
-            vel = math.sqrt(2 * MAX_DECEL * dist)
+
+            vel = np.power(MAX_DECEL * dist * 7, 0.33) * 1.7
+            #vel = math.sqrt(2*MAX_DECEL * dist)
+
+            #rospy.logwarn("Dist: " + str(dist) + " Index: " + str(i) +  " Stop Index: " + str(stop_idx) ) 
+            #rospy.logwarn("Velocity: " + str(vel) ) 
+            
             if vel < 1:
                 vel = 0.
 

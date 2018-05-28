@@ -14,11 +14,11 @@ class Controller(object):
         # TODO: Implement
         self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
 
-        kp = 0.3
-        ki = 0.1
-        kd = 0.
+        kp = 0.4
+        ki = 0.000
+        kd = 0.2
         mn = 0.
-        mx = 0.2
+        mx = accel_limit
         self.throttle_controller = PID(kp, ki, kd, mn, mx)
 
         tau = 0.5
@@ -33,6 +33,8 @@ class Controller(object):
         self.wheel_radius = wheel_radius
 
         self.last_time = rospy.get_time()
+
+        self.total_mass = self.vehicle_mass + self.fuel_capacity * GAS_DENSITY 
 
     def control(self, current_vel, dbw_enabled, linear_vel, angular_vel):
         # TODO: Change the arg, kwarg list to suit your needs
@@ -59,11 +61,13 @@ class Controller(object):
 
         if linear_vel == 0. and current_vel < 0.1:
         	throttle = 0
-        	brake = 400
+        	brake = 700
 
         elif throttle < .1 and vel_error < 0:
         	throttle = 0
         	decel = max(vel_error, self.decel_limit)
-        	brake = abs(decel)  * self.vehicle_mass * self.wheel_radius
+        	brake = abs(decel)  * self.total_mass * self.wheel_radius
+
+        rospy.logwarn("throttle={: .4f}".format(float(throttle)) + "  brake={0:4d}".format(int(brake ))  +"  steering={: .4f}".format(float(steering)) )
 
         return throttle, brake, steering

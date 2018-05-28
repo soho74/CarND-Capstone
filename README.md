@@ -1,4 +1,28 @@
-# install memo
+# Udacity Self-Driving Car Engineer Nanodegree
+------------
+
+### Team name: Driving app
+
+| Name       | email          |
+| --------------- |:---------------:|
+| Noriaki Hori|nori.h.nori@gmail.com|
+| Alexey Sas |asasryl@gmail.com|
+| Andy Jang |  aj4834247@gmail.com|
+| Shuyao Xu|seanxu1015@gmail.com|
+
+### 
+
+# Classifier Progress
+Movie
+https://youtu.be/Gz6hL1oYbfY
+- [![IMAGE ALT TEXT HERE](http://i.ytimg.com/vi/Gz6hL1oYbfY/0.jpg)](https://youtu.be/Gz6hL1oYbfY)
+- ![screenshot](./imgs/0.jpg) 
+- ![screenshot](./imgs/1.jpg) 
+- ![screenshot](./imgs/1.png) 
+Running Instructions
+
+
+# Install memo
 
 - 1.Ubuntu 16.04 
 - 2.ROS Kinetic if you have Ubuntu 16.04.
