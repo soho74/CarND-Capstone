@@ -47,7 +47,7 @@ class TLClassifier(object):
         else:
             num = 6
 
-        if score > 0.8 and traffic_pattern == -1:
+        if score > 0.55 and traffic_pattern == -1:
             if num < 3:
                 traffic_pattern = 1
             else:
