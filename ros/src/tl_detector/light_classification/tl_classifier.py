@@ -55,6 +55,7 @@ class TLClassifier(object):
 
             
         print("                                                                          ", num, score)
+        rospy.logwarn("classifier num=" + str(num) + " score=" + str(score))
 
         if num == 6:
             return 4
