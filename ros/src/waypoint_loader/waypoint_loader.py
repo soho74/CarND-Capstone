@@ -61,7 +61,7 @@ class WaypointLoader(object):
         return math.sqrt(x*x + y*y + z*z)
 
     def decelerate(self, waypoints):
-        // return waypoints
+        # return waypoints
                 
         last = waypoints[-1]
         last.twist.twist.linear.x = 0.
